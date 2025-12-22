@@ -1,0 +1,14 @@
+{
+  "age": 20,
+  "current status": "student",
+  "hobbies": {
+    "morning": [
+      "playing",
+      "reading"
+    ],
+    "evening": [
+      "coding",
+      "exercising"
+    ]
+  }
+}
