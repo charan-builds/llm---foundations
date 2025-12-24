@@ -1,8 +1,7 @@
 """
 NOTE:
-#This file uses the OpenAI API.
-# Currently blocked  due to no API credits.
- 
+This file uses OpenRouter API (OpenAI-compatible).
+Using free / low-cost models for learning.
 """
 
 import os
@@ -12,27 +11,25 @@ from openai import OpenAI
 # Load environment variables
 load_dotenv()
 
-# Read API key
-api_key = os.getenv("OPENAI_API_KEY")
+# Read OpenRouter API key
+api_key = os.getenv("OPENROUTER_API_KEY")
 
-# Create OpenAI client
-client = OpenAI(api_key=api_key)
+# Create OpenAI client with OpenRouter base URL
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://openrouter.ai/api/v1"
+)
 
 # Make a simple request
 response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
+    model="mistralai/mistral-7b-instruct:free",
     messages=[
-        {"role": "user", "content": "Explain Python dictionaries in very simple words."}
-    ]
+        {
+            "role": "user",
+            "content": "Explain Python dictionaries in very simple words."
+        }
+    ],
 )
 
-# Print response
+# Print response (ALWAYS index 0)
 print(response.choices[0].message.content)
-
-
-"""
-NOTE:
-#This file uses the OpenAI API.
-# Currently blocked  due to no API credits.
- 
-"""
