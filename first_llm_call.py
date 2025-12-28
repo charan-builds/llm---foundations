@@ -11,22 +11,24 @@ from openai import OpenAI
 # Load environment variables
 load_dotenv()
 
-# Read OpenRouter API key
-api_key = os.getenv("OPENROUTER_API_KEY")
+# Read Groq API key
+api_key = os.getenv("Groq_API_KEY")
 if not api_key:
-    print("Error: OpenRouter API key is not working properly.")
+     raise ValueError("Groq_API_KEY not found in environment variables.") 
 
-# Create OpenAI client with OpenRouter base URL
+# Create OpenAI client with Groq base URL
 client = OpenAI(
     api_key=api_key,
-    base_url="https://openrouter.ai/api/v1"
+    base_url="https://api.groq.com/openai/v1"
 )
 
 # Make a simple request 
-SYSTEM_PROMPT = "You are a helpful assitant that helps students assuming that their prior knowledge is very basic."
+SYSTEM_PROMPT = "You are a helpful assitant that helps students, assuming that their prior knowledge is very basic. "
 def ask_ai (prompt):
+    import datetime
+    print("Sending prompt to the model... ")
     response = client.chat.completions.create(
-        model="mistralai/mistral-7b-instruct:free",
+        model="groq/compound",
         messages=[
            {
                 "role": "system",
@@ -39,14 +41,21 @@ def ask_ai (prompt):
         ]
     )  
     answer  = response.choices[0].message.content
-    with open("log.txt", "a") as file:
+    with open("llm_inference_data.txt", "a",encoding="utf-8") as file:
       file.write("----- New Interaction -----\n")
       file.write(prompt + "\n")
       file.write(answer + "\n")
       file.write("--------------------------\n")
-    print(answer)
-    return "AI Responsed succesfully."
+      file.write("Time: {}\n".format(datetime.datetime.now()))
+    return answer
+    
 # Get response from the model
-user_prompt = input("Enter your prompt: ")
-result = ask_ai(user_prompt)
-print("AI Response:{}".format(result))
+while True:
+    user_prompt = input("Enter your prompt: ")
+    if user_prompt.lower() in ['exit', 'quit','stop']:
+        print("Exiting the program.......")
+        break
+    result = ask_ai(user_prompt)
+    print("AI Response:{}".format(result))
+    print("Inference completed successfully. Check llm_inference_data.txt for details.")    
+ 
