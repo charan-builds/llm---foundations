@@ -5,6 +5,7 @@ Using free / low-cost models for learning.
 """
 
 import os
+import datetime
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -23,9 +24,9 @@ client = OpenAI(
 )
 
 # Make a simple request 
-SYSTEM_PROMPT = "You are a helpful assitant that helps students, assuming that their prior knowledge is very basic. "
+SYSTEM_PROMPT = " you are a helpful assistant. User is a beginner in programming. Keep answer shortand clear.Friendly and mentor like behaviour and Use Bullet Points. Expalin like I am new .Don't exceed max length 100 words. Avoid Technical words."
 def ask_ai (prompt):
-    import datetime
+    
     print("Sending prompt to the model... ")
     response = client.chat.completions.create(
         model="groq/compound",
@@ -41,11 +42,12 @@ def ask_ai (prompt):
         ]
     )  
     answer  = response.choices[0].message.content
-    with open("llm_inference_data.txt", "a",encoding="utf-8") as file:
-      file.write("----- New Interaction -----\n")
+    with open("Prompt_check.md", "a",encoding="utf-8") as file:
+      file.write("------------------------------- New Interaction ----------------------------------------------------\n")
+      file.write("Prompt given to the model:{}\n".format(SYSTEM_PROMPT))
       file.write(prompt + "\n")
       file.write(answer + "\n")
-      file.write("--------------------------\n")
+      file.write("----------------------------------------------------------------------------------------------------\n")
       file.write("Time: {}\n".format(datetime.datetime.now()))
     return answer
     
@@ -57,5 +59,5 @@ while True:
         break
     result = ask_ai(user_prompt)
     print("AI Response:{}".format(result))
-    print("Inference completed successfully. Check llm_inference_data.txt for details.")    
+    print("Inference completed successfully. Check Prompt_check.md for details.")    
  
