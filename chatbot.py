@@ -26,22 +26,22 @@ client = OpenAI(
 # Make a simple request 
 SYSTEM_PROMPT =(
     "you are a helpful assistant "
-    "Keep answer shot and clear "
+    "Keep answer short and clear "
     "Friendly  behaviour "
     "Use Bullet Points wherever possible "
     "Don't exceed max length 100 words "
     "keep the response relevant to the question asked "
 )
-BEGGINER_PROMPT = (
-    "You are a very good at explaining complex concepts in simple termas and you excel at teaching beginners from startinglevel."
-    "user is a beginner in programming and dont know the techincal terms."
-    "You need to explain the things to user in best way so he get understand and adapt quickly."
-    "Use very simple Language and avoid technical words."
-    "Answer Need to be short and clear and Friendlt tone"
-    "Use Bullet Points wherever possible "
-    "Ask question in between to make sure user that he understanding the concept."
-    "DOnt exceed max length 150 words."
+BEGINNER_PROMPT = (
+    "You are a friendly teacher. "
+    "The user is new to programming. "
+    "Explain ideas in simple words. "
+    "Avoid technical terms. "
+    "Keep answers short and clear. "
+    "Use bullet points when helpful. "
+    "Do not exceed 120 words."
 )
+
 MENTOR_PROMPT = (
     "You are an expert mentor with years of experience."
     "You mentored many students to reach their goal with useful techniques and resources."
@@ -49,27 +49,26 @@ MENTOR_PROMPT = (
     "Ask questions that what user need to achieve and guide him accordingly"
     "Use clear and concise language, avoiding unnecessary jargon."
     "Encourage critical thinking and problem-solving."
-    "Dont Be always positive, Make sure him come out of illusion and face the reality "
+    "Don't Be always positive, Make sure him come out of illusion and face the reality "
     "Offer constructive feedback and suggest resources for further learning."
     "Maintain a supportive and motivating tone throughout your responses."
-    "DOnt exceed max length 200 words."
+    "Don't exceed max length 200 words."
 )
 def system_prompt_selection(prompt_type):
     if prompt_type == "beginner":
-        return BEGGINER_PROMPT
+        return BEGINNER_PROMPT
     elif prompt_type == "mentor":
         return MENTOR_PROMPT
     else:
         return SYSTEM_PROMPT
-    
-def ask_ai (user_prompt,previous_prompt):
+system_prompt = input("Select system prompt (default/ beginner/ mentor): ").strip().lower()
+system_prompt = system_prompt_selection(system_prompt)
+def ask_ai (user_prompt,last_user_prompt):
     FINAL_PROMPT = f"""
-    previous prompt: {previous_prompt}
+    previous prompt: {last_user_prompt}
     current prompt: {user_prompt}
     """
     print("Sending prompt to the model... ")
-    system_prompt = input("Select system prompt (default/ beginner/ mentor): ").strip().lower()
-    system_prompt = system_prompt_selection(system_prompt)
     response = client.chat.completions.create(
         model="groq/compound",
         messages=[
@@ -94,15 +93,25 @@ def ask_ai (user_prompt,previous_prompt):
     return answer
     
 # Get response from the model
-previous_prompt = " "
+last_user_prompt = " "
 while True:
     user_prompt = input("Enter your prompt: ")
-    previous_prompt = user_prompt
     if user_prompt.lower() in ['exit', 'quit','stop']:
-        print("Exiting the program.......")
+        print("“Goodbye! Keep learning step by step 🚀")
         break
-    result = ask_ai(user_prompt,previous_prompt)
+    if ((user_prompt.strip() == "") or (user_prompt.isnumeric() == True)or (all(not c.isalpha() for c in user_prompt) == True)) :
+        print("Can you please provide more details, so that I can assist you better ?")
+        continue
+    if len(user_prompt) < 3:
+        print("Your prompt is too short, please provide more details.")
+        continue
     
-    print("AI Response:{}".format(result))
-    print("Inference completed successfully. Check conversation_log.txt for details.")    
-    
+    try:
+        result = ask_ai(user_prompt,last_user_prompt)
+        last_user_prompt = user_prompt
+
+        print("AI Response:{}".format(result))
+        print("Inference completed successfully. Check conversation_log.txt for details.") 
+    except Exception as e:
+        print("Something went wrong")   
+        
