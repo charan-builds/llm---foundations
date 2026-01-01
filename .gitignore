@@ -1,1 +1,10 @@
-.env/venv
+ # Environment variables
+.env
+
+# Python virtual environment
+venv/
+
+# Git filter repo tool (local use only)
+git-filter-repo/
+
+ 
